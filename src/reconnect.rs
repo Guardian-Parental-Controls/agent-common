@@ -198,13 +198,13 @@ pub async fn run_reconnect_loop<R: AgentRuntime>(
                             maybe_message = client_rx.recv() => {
                                 let Some(message) = maybe_message else { break };
                                 let Ok(serialized) = serde_json::to_string(&message) else { continue };
-                                if ws_write.send(Message::Text(serialized.into())).await.is_err() {
+                                if ws_write.send(Message::Text(serialized)).await.is_err() {
                                     break;
                                 }
                             }
                             maybe_inventory = inventory_rx.recv() => {
                                 let Some(message) = maybe_inventory else { break };
-                                if ws_write.send(Message::Text(message.into())).await.is_err() {
+                                if ws_write.send(Message::Text(message)).await.is_err() {
                                     break;
                                 }
                             }
@@ -456,8 +456,7 @@ where
                 Ok(_) => {}
                 Err(error) => eprintln!("Failed to parse server message during handshake: {error}"),
             },
-            Ok(Message::Close(_)) => return HandshakeResult::Failed,
-            Err(_) => return HandshakeResult::Failed,
+            Ok(Message::Close(_)) | Err(_) => return HandshakeResult::Failed,
             _ => {}
         }
     }
@@ -470,7 +469,7 @@ where
 {
     let serialized = serde_json::to_string(message).map_err(|_| ())?;
     ws_stream
-        .send(Message::Text(serialized.into()))
+        .send(Message::Text(serialized))
         .await
         .map_err(|_| ())
 }

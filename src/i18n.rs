@@ -23,20 +23,16 @@ fn flatten_desktop(value: &serde_json::Value, prefix: &str, out: &mut HashMap<St
                 flatten_desktop(nested, &path, out);
             }
         }
-        serde_json::Value::String(text) => {
-            if !prefix.is_empty() {
-                out.insert(prefix.to_string(), text.clone());
-            }
+        serde_json::Value::String(text) if !prefix.is_empty() => {
+            out.insert(prefix.to_string(), text.clone());
         }
         _ => {}
     }
 }
 
 fn load_catalog(locale: &str) -> Catalog {
-    let raw = match locale {
-        "en" => include_str!("../resources/i18n/en.json"),
-        _ => include_str!("../resources/i18n/en.json"),
-    };
+    let raw = include_str!("../resources/i18n/en.json");
+    let _ = locale;
     let parsed: serde_json::Value =
         serde_json::from_str(raw).unwrap_or_else(|_| serde_json::json!({}));
     let mut strings = HashMap::new();

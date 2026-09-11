@@ -9,7 +9,6 @@ pub fn verify_release_asset(asset_bytes: &[u8], expected_checksum: &str) -> Resu
     let calculated_checksum = hex::encode(result);
 
     let expected_checksum = expected_checksum
-        .trim()
         .split_whitespace()
         .next()
         .unwrap_or("");
