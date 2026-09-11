@@ -1,0 +1,53 @@
+[package]
+name = "guardian-agent-common"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Shared Guardian agent authentication, protocol, and integrity primitives"
+publish = false
+
+[lib]
+name = "guardian_agent"
+crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/uniffi-bindgen.rs"
+
+[dependencies]
+chrono = "0.4.44"
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+hex = "0.4.3"
+hickory-proto = "0.26.1"
+hmac = "0.12.1"
+sentry = { version = "0.34.0", default-features = false, features = ["backtrace", "contexts", "panic", "reqwest", "rustls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10.8"
+tokio = { version = "1.35", features = ["fs", "io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
+tokio-tungstenite = { version = "0.21", default-features = false, features = ["connect", "handshake", "rustls-tls-native-roots"] }
+uniffi = { version = "0.28.0", features = ["cli", "tokio"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+libc = "0.2"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.52", features = [
+    "Win32_Foundation",
+    "Win32_System_SystemInformation",
+    "Win32_System_WindowsProgramming",
+] }
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+implicit_hasher = "allow"
+missing_errors_doc = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+needless_pass_by_value = "allow"
